@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 def pre_poccess(dataset):
     
@@ -18,8 +19,33 @@ def pre_poccess(dataset):
             
     #print(converted_area)
     dataset['area'] = converted_area
-    
-    dataset = dataset.drop(columns = ['page_url'])
+
+    #creating unique location column
+    dataset['unique_location'] = dataset['location'] + ' ' + dataset['city']
+
+    # dividing price by area to get price per unit area
+    dataset['price_per_area'] = dataset['price'] / dataset['area']
+
+    # filtering out empty plots / commercial properties
+    dataset = dataset[dataset['bedrooms'] != 0]
+
+    # removing values outside of 95% interval
+    dataset['price_z_score'] = 0
+
+    # for sales
+    arr = np.array(dataset['price_per_area'][dataset['purpose'] == 'For Sale'])
+    z_score = (dataset['price_per_area'][dataset['purpose'] == 'For Sale'] - np.mean(arr[np.isfinite(arr)])) / np.std(
+        arr[np.isfinite(arr)])
+    dataset['price_z_score'][dataset['purpose'] == 'For Sale'] = z_score
+
+    # for rent
+    arr = np.array(dataset['price_per_area'][dataset['purpose'] == 'For Rent'])
+    z_score = (dataset['price_per_area'][dataset['purpose'] == 'For Rent'] - np.mean(arr[np.isfinite(arr)])) / np.std(
+        arr[np.isfinite(arr)])
+    dataset['price_z_score'][dataset['purpose'] == 'For Rent'] = z_score
+    dataset = dataset.drop(dataset[(dataset['price_z_score'] > 3) | (dataset['price_z_score'] < -3)].index)
+
+    dataset = dataset.drop(columns = ['page_url', 'property_id', 'location_id'])
 
     print("pre-poccessed successfully.")
     
