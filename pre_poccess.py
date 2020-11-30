@@ -4,7 +4,7 @@ import numpy as np
 def pre_poccess(dataset):
     
     ##adding indivdual where agency is not given
-    dataset['agency'][dataset['agency'].isnull()] = 'Individual'
+    dataset.loc[dataset['agency'].isnull(), 'agency'] = 'Individual'
     
     
     #using the conversion of urban https://www.zameen.com/forum/discussions/other_and_misc/kanal__marla__square_feet__square_yards_conversion-12358.html
@@ -27,24 +27,36 @@ def pre_poccess(dataset):
     dataset['price_per_area'] = dataset['price'] / dataset['area']
 
     # filtering out empty plots / commercial properties
+    dataset['price_z_score'] = 0
     dataset = dataset[dataset['bedrooms'] != 0]
 
+    print(len(dataset.index))
     # removing values outside of 95% interval
-    dataset['price_z_score'] = 0
+    dataset.loc[:, 'price_z_score'] = 0
 
     # for sales
     arr = np.array(dataset['price_per_area'][dataset['purpose'] == 'For Sale'])
     z_score = (dataset['price_per_area'][dataset['purpose'] == 'For Sale'] - np.mean(arr[np.isfinite(arr)])) / np.std(
         arr[np.isfinite(arr)])
+
     dataset['price_z_score'][dataset['purpose'] == 'For Sale'] = z_score
+    #dataset.loc[dataset['purpose'] == 'For Sale', 'prize_z_score'] = z_score
 
     # for rent
     arr = np.array(dataset['price_per_area'][dataset['purpose'] == 'For Rent'])
     z_score = (dataset['price_per_area'][dataset['purpose'] == 'For Rent'] - np.mean(arr[np.isfinite(arr)])) / np.std(
         arr[np.isfinite(arr)])
+
     dataset['price_z_score'][dataset['purpose'] == 'For Rent'] = z_score
+    #dataset.loc[dataset['purpose'] == 'For Rent', 'prize_z_score'] = z_score
+
+
+
+
+    ##dataset = dataset[(dataset['price_z_score'] < 3) and (dataset['price_z_score'] > -3)]
     dataset = dataset.drop(dataset[(dataset['price_z_score'] > 3) | (dataset['price_z_score'] < -3)].index)
 
+    print(len(dataset.index))
     dataset = dataset.drop(columns = ['page_url', 'property_id', 'location_id'])
 
     print("pre-poccessed successfully.")
