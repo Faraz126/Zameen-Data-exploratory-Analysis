@@ -5,8 +5,8 @@ def pre_poccess(dataset):
     
     ##adding indivdual where agency is not given
     dataset.loc[dataset['agency'].isnull(), 'agency'] = 'Individual'
-    
-    
+    dataset.drop(['agent'], axis=1, inplace=True)
+
     #using the conversion of urban https://www.zameen.com/forum/discussions/other_and_misc/kanal__marla__square_feet__square_yards_conversion-12358.html
     converted_area = []
     for area in dataset['area']:
