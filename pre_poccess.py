@@ -51,10 +51,12 @@ def pre_poccess(dataset):
     #dataset.loc[dataset['purpose'] == 'For Rent', 'prize_z_score'] = z_score
 
 
-
-
     ##dataset = dataset[(dataset['price_z_score'] < 3) and (dataset['price_z_score'] > -3)]
     dataset = dataset.drop(dataset[(dataset['price_z_score'] > 3) | (dataset['price_z_score'] < -3)].index)
+
+    # changing date_added type to date
+    dataset['date_added'] = dataset['date_added'].apply(pd.to_datetime, format='%m-%d-%Y')
+    print("date done")
 
     print(len(dataset.index))
     dataset = dataset.drop(columns = ['page_url', 'property_id', 'location_id'])
@@ -63,3 +65,6 @@ def pre_poccess(dataset):
     
     return dataset
     
+# data = pd.read_csv('dataset/Zameen Property Data.csv')
+# pp_data = pre_poccess(data)
+# print(pp_data.dtypes)
