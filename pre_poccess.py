@@ -23,6 +23,8 @@ def pre_poccess(dataset):
     #creating unique location column
     dataset['unique_location'] = dataset['location'] + ' ' + dataset['city']
 
+
+
     # dividing price by area to get price per unit area
     dataset['price_per_area'] = dataset['price'] / dataset['area']
 
@@ -50,11 +52,11 @@ def pre_poccess(dataset):
     dataset['price_z_score'][dataset['purpose'] == 'For Rent'] = z_score
     #dataset.loc[dataset['purpose'] == 'For Rent', 'prize_z_score'] = z_score
 
-
-
-
+    
     ##dataset = dataset[(dataset['price_z_score'] < 3) and (dataset['price_z_score'] > -3)]
     dataset = dataset.drop(dataset[(dataset['price_z_score'] > 3) | (dataset['price_z_score'] < -3)].index)
+
+
 
     print(len(dataset.index))
     dataset = dataset.drop(columns = ['page_url', 'property_id', 'location_id'])
