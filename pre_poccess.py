@@ -23,6 +23,8 @@ def pre_poccess(dataset):
     #creating unique location column
     dataset['unique_location'] = dataset['location'] + ' ' + dataset['city']
 
+
+
     # dividing price by area to get price per unit area
     dataset['price_per_area'] = dataset['price'] / dataset['area']
 
@@ -57,6 +59,7 @@ def pre_poccess(dataset):
     # changing date_added type to date
     dataset['date_added'] = dataset['date_added'].apply(pd.to_datetime, format='%m-%d-%Y')
     print("date done")
+
 
     print(len(dataset.index))
     dataset = dataset.drop(columns = ['page_url', 'property_id', 'location_id'])
