@@ -12,10 +12,10 @@ def pre_poccess(dataset):
     for area in dataset['area']:
         if area.endswith('Marla'):
             #print("MARLA", str(area))
-            converted_area.append(float(area.split()[0].replace(',', '')) * 500)
+            converted_area.append(float(area.split()[0].replace(',', '')) * 25)
         if area.endswith('Kanal'):
             #print("Kanal", str(area))
-            converted_area.append(float(area.split()[0].replace(',', '')) * 25)
+            converted_area.append(float(area.split()[0].replace(',', '')) * 500)
             
     #print(converted_area)
     dataset['area'] = converted_area
